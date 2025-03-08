@@ -1,0 +1,123 @@
+import tkinter as tk
+import math
+
+def on_click(button_text):
+    current_text = entry_var.get()
+    if button_text == "C":
+        entry_var.set("")
+    elif button_text == "=":
+        try:
+            result = str(eval(current_text))
+            entry_var.set(result)
+        except Exception:
+            entry_var.set("Error")
+    else:
+        entry_var.set(current_text + button_text)
+
+def backspace():
+    current_text = entry_var.get()
+    entry_var.set(current_text[:-1])
+
+def clear_entry():
+    entry_var.set("")
+
+def add_to_entry(value):
+    current_text = entry_var.get()
+    entry_var.set(current_text + value)
+
+def square():
+    try:
+        result = str(eval(entry_var.get()) ** 2)
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def square_root():
+    try:
+        result = str(math.sqrt(eval(entry_var.get())))
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def reciprocal():
+    try:
+        result = str(1 / eval(entry_var.get()))
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def factorial():
+    try:
+        result = str(math.factorial(int(eval(entry_var.get()))))
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def trig_function(func):
+    try:
+        result = str(getattr(math, func)(math.radians(eval(entry_var.get()))))
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def log_function():
+    try:
+        result = str(math.log10(eval(entry_var.get())))
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def power():
+    entry_var.set(entry_var.get() + "**")
+
+def percentage():
+    try:
+        result = str(eval(entry_var.get()) / 100)
+        entry_var.set(result)
+    except Exception:
+        entry_var.set("Error")
+
+def create_button(root, text, command, row, column):
+    btn = tk.Button(root, text=text, font=("Arial", 14), command=command, width=6, height=2, bd=3, relief=tk.RAISED)
+    btn.grid(row=row, column=column, padx=3, pady=3)
+
+def setup_buttons(root):
+    buttons = [
+        ('7', '8', '9', '/'),
+        ('4', '5', '6', '*'),
+        ('1', '2', '3', '-'),
+        ('C', '0', '=', '+')
+    ]
+    for r, row in enumerate(buttons, start=1):
+        for c, text in enumerate(row):
+            create_button(root, text, lambda t=text: on_click(t), r, c)
+    extra_buttons = [
+        ('(', ')', '⌫', 'CE'),
+        ('x²', '√x', '1/x', '!'),
+        ('sin', 'cos', 'tan', 'log'),
+        ('π', 'e', '^', '%')
+    ]
+    functions = {
+        '⌫': backspace, 'CE': clear_entry, 'x²': square, '√x': square_root, '1/x': reciprocal,
+        '!': factorial, 'sin': lambda: trig_function('sin'), 'cos': lambda: trig_function('cos'),
+        'tan': lambda: trig_function('tan'), 'log': log_function, 'π': lambda: add_to_entry(str(math.pi)),
+        'e': lambda: add_to_entry(str(math.e)), '^': power, '%': percentage
+    }
+    for r, row in enumerate(extra_buttons, start=5):
+        for c, text in enumerate(row):
+            command = functions.get(text, lambda t=text: on_click(t))
+            create_button(root, text, command, r, c)
+
+def main():
+    global root, entry_var
+    root = tk.Tk()
+    root.title("Simple Calculator")
+    root.geometry("420x650")
+    entry_var = tk.StringVar()
+    entry = tk.Entry(root, textvariable=entry_var, font=("Arial", 20), justify='right', bd=5, relief=tk.SUNKEN)
+    entry.grid(row=0, column=0, columnspan=4, ipadx=10, ipady=10)
+    setup_buttons(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
